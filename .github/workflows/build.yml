@@ -30,11 +30,12 @@ jobs:
             CODE_SIGN_IDENTITY=\"\" \
             DEVELOPMENT_TEAM=\"\"
 
-      - name: Create Unsigned IPA (manual zip)
+      - name: Create Unsigned IPA (proper zip)
         run: |
           mkdir -p build/ipa
           cd build/GrokJobAutofill.xcarchive/Products/Applications
-          zip -r ../../../ipa/GrokJobAutofill-unsigned.ipa GrokJobAutofill.app
+          # -X excludes extra macOS attributes that often break mobile extractors
+          zip -r -X ../../../ipa/GrokJobAutofill-unsigned.ipa GrokJobAutofill.app
 
       - name: Upload Unsigned IPA
         uses: actions/upload-artifact@v4
@@ -42,8 +43,8 @@ jobs:
           name: GrokJobAutofill-unsigned
           path: build/ipa/GrokJobAutofill-unsigned.ipa
 
-      - name: Upload .app (optional)
+      - name: Upload raw .app (recommended for sideloading)
         uses: actions/upload-artifact@v4
         with:
           name: GrokJobAutofill-app
-          path: build/GrokJobAutofill.xcarchive/Products/Applications/
+          path: build/GrokJobAutofill.xcarchive/Products/Applications/GrokJobAutofill.app
