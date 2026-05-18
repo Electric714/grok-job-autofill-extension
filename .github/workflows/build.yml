@@ -19,7 +19,7 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate --spec project.yml
 
-      - name: Build Unsigned IPA
+      - name: Build Unsigned Archive
         run: |
           xcodebuild -project GrokJobAutofill.xcodeproj \
             -scheme GrokJobAutofill \
@@ -27,20 +27,20 @@ jobs:
             -archivePath build/GrokJobAutofill.xcarchive \
             archive \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="" \
-            DEVELOPMENT_TEAM=""
+            CODE_SIGN_IDENTITY=\"\" \
+            DEVELOPMENT_TEAM=\"\"
 
-          xcodebuild -exportArchive \
-            -archivePath build/GrokJobAutofill.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist exportOptions.plist \
-            CODE_SIGNING_ALLOWED=NO
+      - name: Create Unsigned IPA (manual zip)
+        run: |
+          mkdir -p build/ipa
+          cd build/GrokJobAutofill.xcarchive/Products/Applications
+          zip -r ../../../ipa/GrokJobAutofill-unsigned.ipa GrokJobAutofill.app
 
       - name: Upload Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
           name: GrokJobAutofill-unsigned
-          path: build/ipa/*.ipa
+          path: build/ipa/GrokJobAutofill-unsigned.ipa
 
       - name: Upload .app (optional)
         uses: actions/upload-artifact@v4
