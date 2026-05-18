@@ -1,0 +1,49 @@
+name: Build Unsigned Safari Extension IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate --spec project.yml
+
+      - name: Build Unsigned IPA
+        run: |
+          xcodebuild -project GrokJobAutofill.xcodeproj \
+            -scheme GrokJobAutofill \
+            -configuration Release \
+            -archivePath build/GrokJobAutofill.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM=""
+
+          xcodebuild -exportArchive \
+            -archivePath build/GrokJobAutofill.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload Unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrokJobAutofill-unsigned
+          path: build/ipa/*.ipa
+
+      - name: Upload .app (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrokJobAutofill-app
+          path: build/GrokJobAutofill.xcarchive/Products/Applications/
