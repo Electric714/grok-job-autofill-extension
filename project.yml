@@ -1,6 +1,6 @@
 name: GrokJobAutofill
 options:
-  bundleIdPrefix: com.yourcompany
+  bundleIdPrefix: com.yourcompany  # CHANGE THIS to your actual bundle ID prefix
   deploymentTarget:
     iOS: 17.0
 targets:
@@ -12,6 +12,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.yourcompany.grokjobautofill
+    info:
+      path: Sources/App/Info.plist
     dependencies:
       - target: GrokJobAutofillExtension
 
